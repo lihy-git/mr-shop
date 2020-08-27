@@ -13,6 +13,8 @@
         <module>mingrui-shop-service</module>
         <module>mingrui-shop-service-api</module>
         <module>mingrui-shop-basics/mingrui-shop-basic-eureka-server</module>
+        <module>mingrui-shop-common-core</module>
+        <module>mingrui-shop-service-api-xxx</module>
     </modules>
 
     <!--父级项目不需要打包所有packging的类型为pom-->
