@@ -14,7 +14,9 @@
     <!--父级项目不需要打包所有packging的类型为pom-->
     <packaging>pom</packaging>
     <modules>
+        <module>mingrui-shop-basic-eureka-server</module>
         <module>mingrui-shop-basic-zuul-serer</module>
+        <module>mingrui-shop-basic-upload-server</module>
     </modules>
 
 </project>
