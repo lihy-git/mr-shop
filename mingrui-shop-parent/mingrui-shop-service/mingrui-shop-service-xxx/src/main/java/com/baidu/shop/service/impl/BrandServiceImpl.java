@@ -49,7 +49,7 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
 
         if(StringUtil.isNotEmpty(brandDTO.getSort())) example.setOrderByClause(brandDTO.getOrderByClause());
 
-        if (StringUtil.isNotEmpty(brandDTO.getName())) example.createCriteria()
+        if(StringUtil.isNotEmpty(brandDTO.getName())) example.createCriteria()
                 .andLike("name","%" + brandDTO.getName() + "%");
 
         //查询
@@ -161,15 +161,18 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
         brandMapper.updateByPrimaryKeySelective(brandEntity);
 
         //通过brandID删除中间表的数据
-        Example example = new Example(CategoryBrandEntity.class);
-        example.createCriteria().andEqualTo("brandId",brandEntity.getId());
-        categoryBrandMapper.deleteByExample(example);
+//        Example example = new Example(CategoryBrandEntity.class);
+//        example.createCriteria().andEqualTo("brandId",brandEntity.getId());
+//        categoryBrandMapper.deleteByExample(example);
+        this.deleteCategoryAndBrand(brandEntity.getId());
 
         //新增新的数据
         this.insertCategoryAndBrand(brandDTO,brandEntity);
 
         return this.setResultSuccess();
     }
+
+
 
     private void insertCategoryAndBrand(BrandDTO brandDTO, BrandEntity brandEntity){
 
@@ -193,4 +196,25 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
             categoryBrandMapper.insertSelective(entity);
         }
     }
+
+    @Transactional
+    @Override
+    public Result<JsonObject> deleteBrand(Integer id) {
+
+        //删除品牌
+        brandMapper.deleteByPrimaryKey(id);
+        //关系?????
+        this.deleteCategoryAndBrand(id);
+
+        return this.setResultSuccess();
+    }
+
+    private void deleteCategoryAndBrand(Integer id){
+
+        Example example = new Example(CategoryBrandEntity.class);
+        example.createCriteria().andEqualTo("brandId",id);
+        categoryBrandMapper.deleteByPrimaryKey(example);
+
+    }
+
 }
