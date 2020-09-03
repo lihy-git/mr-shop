@@ -213,7 +213,7 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
 
         Example example = new Example(CategoryBrandEntity.class);
         example.createCriteria().andEqualTo("brandId",id);
-        categoryBrandMapper.deleteByPrimaryKey(example);
+        categoryBrandMapper.deleteByExample(example);
 
     }
 

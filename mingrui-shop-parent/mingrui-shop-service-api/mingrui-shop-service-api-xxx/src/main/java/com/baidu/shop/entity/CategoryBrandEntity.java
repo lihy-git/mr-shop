@@ -19,4 +19,19 @@ public class CategoryBrandEntity {
 
     private Integer brandId;
 
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public void setBrandId(Integer brandId) {
+        this.brandId = brandId;
+    }
+
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public Integer getBrandId() {
+        return brandId;
+    }
 }
