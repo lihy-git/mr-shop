@@ -22,7 +22,7 @@ import java.util.UUID;
  * @Version V1.0
  **/
 @RestController
-@RequestMapping(value = "upload")
+@RequestMapping(value = "uploade")
 public class UploadController extends BaseApiService {
 
     //windows系统的上传目录
