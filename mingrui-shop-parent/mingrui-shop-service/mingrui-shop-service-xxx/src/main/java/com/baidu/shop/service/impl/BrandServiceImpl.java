@@ -9,6 +9,7 @@ import com.baidu.shop.mapper.BrandMapper;
 import com.baidu.shop.mapper.CategoryBrandMapper;
 import com.baidu.shop.service.BrandService;
 import com.baidu.shop.utils.BaiduBeanUtil;
+import com.baidu.shop.utils.ObjectUtil;
 import com.baidu.shop.utils.PinyinUtil;
 import com.baidu.shop.utils.StringUtil;
 import com.github.pagehelper.PageHelper;
@@ -132,6 +133,19 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
 
         categoryBrandMapper.deleteByExample(example);
 
+    }
+
+    @Override
+    public Result<BrandEntity> getBrandByCategory(Integer cid) {
+
+        if(ObjectUtil.isNotNull(cid)){
+
+            List<BrandEntity> list = brandMapper.getBrandByCategory(cid);
+
+            return this.setResultSuccess(list);
+        }
+
+        return null;
     }
 
 }

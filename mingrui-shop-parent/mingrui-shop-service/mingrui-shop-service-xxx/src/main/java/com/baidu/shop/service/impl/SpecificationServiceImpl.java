@@ -15,6 +15,7 @@ import com.baidu.shop.status.HTTPStatus;
 import com.baidu.shop.utils.BaiduBeanUtil;
 import com.baidu.shop.utils.ObjectUtil;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
 import tk.mybatis.mapper.entity.Example;
 
@@ -113,5 +114,28 @@ public class SpecificationServiceImpl extends BaseApiService implements Specific
         specParamMapper.deleteByPrimaryKey(id);
 
         return this.setResultSuccess();
+    }
+
+    @Override
+    public Result<SpecGroupEntity> getSepcGroupInfo(SpecGroupDTO specGroupDTO) {
+
+        List<SpecGroupEntity> specGroupEntities = null;
+
+        if (ObjectUtil.isNotNull(specGroupDTO)) {
+            Example example = new Example(SpecGroupEntity.class);
+            Example.Criteria criteria = example.createCriteria();
+            if (ObjectUtil.isNotNull(specGroupDTO.getCid())) {
+                criteria.andEqualTo("cid", specGroupDTO.getCid());
+            }
+            if (!StringUtils.isEmpty(specGroupDTO.getName())) {
+
+                criteria.andLike("name","%" + specGroupDTO.getName() + "%");
+            }
+
+            specGroupEntities = specGroupMapper.selectByExample(example);
+        }
+
+
+        return this.setResultSuccess(specGroupEntities);
     }
 }
