@@ -39,15 +39,6 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
     @Resource
     private CategoryMapper categoryMapper;
 
-    @Resource
-    private SpuDetailMapper spuDetailMapper;
-
-    @Resource
-    private SkuMapper skuMapper;
-
-    @Resource
-    private StockMapper stockMapper;
-
     @Override
     public Result<Map<String, Object>> getSpuInfo(SpuDTO spuDTO) {
 
@@ -98,45 +89,6 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
         map.put("total",total);
 
         return this.setResultSuccess(map);
-    }
-
-    @Transactional
-    @Override
-    public Result<JSONObject> saveGoods(SpuDTO spuDTO) {
-        System.out.println(spuDTO);
-
-        SpuEntity spuEntity = BaiduBeanUtil.copyProperties(spuDTO, SpuEntity.class);
-
-        spuEntity.setSaleable(1);
-        spuEntity.setValid(1);
-
-        final Date date = new Date();
-        spuEntity.setCreateTime(date);
-        spuEntity.setLastUpdateTime(date);
-
-        spuMapper.insertSelective(spuEntity);
-
-        SpuDetailEntity spuDetailEntity = BaiduBeanUtil.copyProperties(spuDTO.getSpuDetail(), SpuDetailEntity.class);
-        spuDetailEntity.setSpuId(spuEntity.getId());
-
-        spuDetailMapper.insertSelective(spuDetailEntity);
-
-        spuDTO.getSkus().stream().forEach(skuDto -> {
-            SkuEntity skuEntity = BaiduBeanUtil.copyProperties(skuDto, SkuEntity.class);
-            skuEntity.setSpuId(spuEntity.getId());
-
-            skuEntity.setCreateTime(date);
-            skuEntity.setLastUpdateTime(date);
-
-            skuMapper.insertSelective(skuEntity);
-
-            StockEntity stockEntity = new StockEntity();
-            stockEntity.setSkuId(skuEntity.getId());
-            stockEntity.setStock(skuDto.getStock());
-            stockMapper.insertSelective(stockEntity);
-        });
-
-        return this.setResultSuccess();
     }
 
 }

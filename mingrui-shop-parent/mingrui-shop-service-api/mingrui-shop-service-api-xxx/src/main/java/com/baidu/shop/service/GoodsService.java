@@ -18,8 +18,8 @@ public interface GoodsService {
     @GetMapping(value = "goods/getSpuInfo")
     public Result<Map<String, Object>> getSpuInfo(SpuDTO spuDTO);
 
-    @ApiOperation(value = "新建商品")
-    @PostMapping(value = "goods/add")
-    Result<JSONObject> saveGoods(@RequestBody SpuDTO spuDTO);
+//    @ApiOperation(value = "新建商品")
+//    @PostMapping(value = "goods/add")
+//    Result<JSONObject> saveGoods(@RequestBody SpuDTO spuDTO);
 
 }

@@ -6,6 +6,7 @@ import com.baidu.shop.base.Result;
 import com.baidu.shop.entity.CategoryEntity;
 import com.baidu.shop.mapper.CategoryMapper;
 import com.baidu.shop.service.CategoryService;
+import com.baidu.shop.status.HTTPStatus;
 import com.baidu.shop.utils.ObjectUtil;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
@@ -79,8 +80,14 @@ public class CategoryServiceImpl extends BaseApiService implements CategoryServi
 
         if(categoryEntity.getIsParent() == 1){
 
-            return this.setResultError("当前节点为父节点,不能删除");
+//            return this.setResultError("当前节点为父节点,不能删除");
+            return this.setResultError(HTTPStatus.OPERATION_ERROR,"当前节点为父节点,不能删除");
 
+        }
+
+        Integer count = categoryMapper.getByCategoryId(id);
+        if(count > 0){
+            return this.setResultError(HTTPStatus.OPERATION_ERROR,"当前分类被品牌绑定,不能删除");
         }
 
         Example example = new Example(CategoryEntity.class);

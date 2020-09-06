@@ -10,7 +10,7 @@ import java.util.Date;
  * @ClassName SpuEntity
  * @Description: TODO
  * @Author lihongyang
- * @Date 2020/9/4
+ * @Date 2020/9/5
  * @Version V1.0
  **/
 @Table(name = "tb_spu")

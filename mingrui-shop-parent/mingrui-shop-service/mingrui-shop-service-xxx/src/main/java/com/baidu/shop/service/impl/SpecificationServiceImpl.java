@@ -71,7 +71,13 @@ public class SpecificationServiceImpl extends BaseApiService implements Specific
     @Override
     public Result<JSONObject> delete(Integer id) {
 
-        specGroupMapper.deleteByPrimaryKey(id);
+        Example example = new Example(SpecParamEntity.class);
+        example.createCriteria().andEqualTo("groupId",id);
+        List<SpecParamEntity> list = specParamMapper.selectByExample(example);
+        if(list.size() != 0){
+            return this.setResultError(HTTPStatus.OPERATION_ERROR,"当前规格被绑定不能删除");
+        }
+//        specGroupMapper.deleteByPrimaryKey(id);
 
         return this.setResultSuccess();
     }
@@ -114,28 +120,5 @@ public class SpecificationServiceImpl extends BaseApiService implements Specific
         specParamMapper.deleteByPrimaryKey(id);
 
         return this.setResultSuccess();
-    }
-
-    @Override
-    public Result<SpecGroupEntity> getSepcGroupInfo(SpecGroupDTO specGroupDTO) {
-
-        List<SpecGroupEntity> specGroupEntities = null;
-
-        if (ObjectUtil.isNotNull(specGroupDTO)) {
-            Example example = new Example(SpecGroupEntity.class);
-            Example.Criteria criteria = example.createCriteria();
-            if (ObjectUtil.isNotNull(specGroupDTO.getCid())) {
-                criteria.andEqualTo("cid", specGroupDTO.getCid());
-            }
-            if (!StringUtils.isEmpty(specGroupDTO.getName())) {
-
-                criteria.andLike("name","%" + specGroupDTO.getName() + "%");
-            }
-
-            specGroupEntities = specGroupMapper.selectByExample(example);
-        }
-
-
-        return this.setResultSuccess(specGroupEntities);
     }
 }

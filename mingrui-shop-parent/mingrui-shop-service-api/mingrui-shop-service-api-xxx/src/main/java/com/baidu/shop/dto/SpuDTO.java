@@ -4,18 +4,17 @@ import com.baidu.shop.base.BaseDTO;
 import com.baidu.shop.validate.group.MingruiOperation;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import lombok.Data;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @ClassName SpuDTO
  * @Description: TODO
  * @Author lihongyang
- * @Date 2020/9/4
+ * @Date 2020/9/5
  * @Version V1.0
  **/
 @ApiModel(value = "spu数据传输DTO")
@@ -49,26 +48,24 @@ public class SpuDTO extends BaseDTO {
     @NotNull(message = "商品所属品牌id不能为空",groups = {MingruiOperation.Add.class})
     private Integer brandId;
 
+    //不需要验证,新增时直接设置默认值
     @ApiModelProperty(value = "是否上架，0下架，1上架", example = "1")
     private Integer saleable;
 
+    //不需要验证,新增时直接设置默认值
     @ApiModelProperty(value = "是否有效，0已删除，1有效", example = "1")
     private Integer valid;
 
+    //不需要验证,新增时直接设置默认值
     @ApiModelProperty(value = "添加时间")
     private Date createTime;
 
+    //不需要验证,新增时直接设置默认值,修改时使用java代码赋值
     @ApiModelProperty(value = "最后修改时间")
     private Date lastUpdateTime;
 
     private String brandName;
 
     private String categoryName;
-
-    @ApiModelProperty(value = "大字段数据")
-    private SpuDetailDTO spuDetail;
-
-    @ApiModelProperty(value = "sku属性数据集合")
-    private List<SkuDTO> skus;
 
 }
