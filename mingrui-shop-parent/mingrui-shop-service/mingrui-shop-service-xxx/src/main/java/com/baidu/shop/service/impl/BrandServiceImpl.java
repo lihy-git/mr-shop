@@ -43,14 +43,21 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
     @Override
     public Result<PageInfo<BrandEntity>> getBrandInfo(BrandDTO brandDTO) {
 
-        PageHelper.startPage(brandDTO.getPage(),brandDTO.getRows());
+//        PageHelper.startPage(brandDTO.getPage(),brandDTO.getRows());
+        if(ObjectUtil.isNotNull(brandDTO.getPage())
+                && ObjectUtil.isNotNull(brandDTO.getRows()))
+            PageHelper.startPage(brandDTO.getPage(),brandDTO.getRows());
 
         Example example = new Example(BrandEntity.class);
 
         if(StringUtil.isNotEmpty(brandDTO.getSort())) example.setOrderByClause(brandDTO.getOrderByClause());
 
-        if(StringUtil.isNotEmpty(brandDTO.getName())) example.createCriteria()
-                .andLike("name","%" + brandDTO.getName() + "%");
+        Example.Criteria criteria = example.createCriteria();
+        if(ObjectUtil.isNotNull(brandDTO.getId()))
+            criteria.andEqualTo("id",brandDTO.getId());
+
+        if(StringUtil.isNotEmpty(brandDTO.getName()))
+            criteria.andLike("name","%" + brandDTO.getName() + "%");
 
         List<BrandEntity> list = brandMapper.selectByExample(example);
 
@@ -125,6 +132,13 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
         return this.setResultSuccess();
     }
 
+    @Override
+    public Result<List<BrandEntity>> getBrandByCategory(Integer cid) {
+        List<BrandEntity> list = brandMapper.getBrandByCategory(cid);
+
+        return this.setResultSuccess(list);
+    }
+
     private void deleteCategoryAndBrand(Integer id){
 
         Example example = new Example(CategoryBrandEntity.class);
@@ -133,19 +147,6 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
 
         categoryBrandMapper.deleteByExample(example);
 
-    }
-
-    @Override
-    public Result<BrandEntity> getBrandByCategory(Integer cid) {
-
-        if(ObjectUtil.isNotNull(cid)){
-
-            List<BrandEntity> list = brandMapper.getBrandByCategory(cid);
-
-            return this.setResultSuccess(list);
-        }
-
-        return null;
     }
 
 }

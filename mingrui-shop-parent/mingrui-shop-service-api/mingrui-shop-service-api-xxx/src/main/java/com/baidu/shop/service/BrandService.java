@@ -11,6 +11,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Api(tags = "品牌接口")
 public interface BrandService {
 
@@ -32,6 +34,6 @@ public interface BrandService {
 
     @ApiOperation(value="通过分类id获取品牌")
     @GetMapping(value = "brand/getBrandByCategory")
-    Result<BrandEntity> getBrandByCategory(Integer cid);
+    public Result<List<BrandEntity>> getBrandByCategory(Integer cid);
 
 }

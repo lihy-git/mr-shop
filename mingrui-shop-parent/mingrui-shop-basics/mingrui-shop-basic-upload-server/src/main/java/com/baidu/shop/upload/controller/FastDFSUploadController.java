@@ -32,20 +32,14 @@ public class FastDFSUploadController {
     //图片服务器的地址
     @Value(value = "${mingrui.upload.img.host}")
     private String imgHost;
-
     @Autowired
     private FastFileStorageClient storageClient;
-
     @Autowired
     private ThumbImageConfig thumbImageConfig;
-
-
     @PostMapping
     public Result<String> uploadImg(@RequestParam MultipartFile file) throws IOException {
         InputStream inputStream = file.getInputStream();//获取文件输入流
-
         String filename = file.getOriginalFilename();//文件名
-
         String ex = filename.substring(filename.lastIndexOf(".") + 1);//文件后缀名
         // 上传并且生成缩略图
         StorePath storePath = this.storageClient.uploadImageAndCrtThumbImage(
@@ -57,7 +51,6 @@ public class FastDFSUploadController {
         // 获取缩略图路径
         String path = thumbImageConfig.getThumbImagePath(storePath.getFullPath());
         log.info("缩略图路径:{}", path);
-
         return new Result<String>(HTTPStatus.OK,"上传成功",imgHost + path);
     }
 
