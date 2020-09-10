@@ -5,9 +5,12 @@ import com.baidu.shop.base.Result;
 import com.baidu.shop.dto.BrandDTO;
 import com.baidu.shop.entity.BrandEntity;
 import com.baidu.shop.entity.CategoryBrandEntity;
+import com.baidu.shop.entity.SpuEntity;
 import com.baidu.shop.mapper.BrandMapper;
 import com.baidu.shop.mapper.CategoryBrandMapper;
+import com.baidu.shop.mapper.SpuMapper;
 import com.baidu.shop.service.BrandService;
+import com.baidu.shop.status.HTTPStatus;
 import com.baidu.shop.utils.BaiduBeanUtil;
 import com.baidu.shop.utils.ObjectUtil;
 import com.baidu.shop.utils.PinyinUtil;
@@ -40,10 +43,12 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
     @Resource
     private CategoryBrandMapper categoryBrandMapper;
 
+    @Resource
+    private SpuMapper spuMapper;
+
     @Override
     public Result<PageInfo<BrandEntity>> getBrandInfo(BrandDTO brandDTO) {
 
-//        PageHelper.startPage(brandDTO.getPage(),brandDTO.getRows());
         if(ObjectUtil.isNotNull(brandDTO.getPage())
                 && ObjectUtil.isNotNull(brandDTO.getRows()))
             PageHelper.startPage(brandDTO.getPage(),brandDTO.getRows());
@@ -124,6 +129,13 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
     @Transactional
     @Override
     public Result<JsonObject> deleteBrand(Integer id) {
+
+        Example example = new Example(SpuEntity.class);
+        example.createCriteria().andEqualTo("brandId",id);
+        List<SpuEntity> spuEntityList = spuMapper.selectByExample(example);
+        if(spuEntityList.size() >0){
+            return this.setResultError(HTTPStatus.OPERATION_ERROR,"当前品牌被商品绑定不能删除");
+        }
 
         brandMapper.deleteByPrimaryKey(id);
 

@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.baidu.shop.base.BaseApiService;
 import com.baidu.shop.base.Result;
 import com.baidu.shop.entity.CategoryEntity;
+import com.baidu.shop.entity.SpuEntity;
 import com.baidu.shop.mapper.CategoryMapper;
+import com.baidu.shop.mapper.SpuMapper;
 import com.baidu.shop.service.CategoryService;
 import com.baidu.shop.status.HTTPStatus;
 import com.baidu.shop.utils.ObjectUtil;
@@ -28,13 +30,15 @@ public class CategoryServiceImpl extends BaseApiService implements CategoryServi
     @Resource
     private CategoryMapper categoryMapper;
 
+    @Resource
+    private SpuMapper spuMapper;
+
     @Override
     public Result<List<CategoryEntity>> getCategoryByPid(Integer pid) {
 
         CategoryEntity categoryEntity = new CategoryEntity();
 
         categoryEntity.setParentId(pid);
-
         List<CategoryEntity> list = categoryMapper.select(categoryEntity);
 
         return this.setResultSuccess(list);
@@ -47,11 +51,9 @@ public class CategoryServiceImpl extends BaseApiService implements CategoryServi
         CategoryEntity parentCateEntity = new CategoryEntity();
 
         parentCateEntity.setId(categoryEntity.getParentId());
-
         parentCateEntity.setIsParent(1);
 
         categoryMapper.updateByPrimaryKeySelective(parentCateEntity);
-
         categoryMapper.insertSelective(categoryEntity);
 
         return this.setResultSuccess();
@@ -70,47 +72,40 @@ public class CategoryServiceImpl extends BaseApiService implements CategoryServi
     @Override
     public Result<JSONObject> deleteCategory(Integer id) {
 
-        if (ObjectUtil.isNull(id)) {
-
-            return this.setResultError("当前id不存在");
-
-        }
-
         CategoryEntity categoryEntity = categoryMapper.selectByPrimaryKey(id);
 
+        if(ObjectUtil.isNull(categoryEntity)){
+            return this.setResultError(HTTPStatus.OPERATION_ERROR,"当前id不存在");
+        }
         if(categoryEntity.getIsParent() == 1){
-
-//            return this.setResultError("当前节点为父节点,不能删除");
             return this.setResultError(HTTPStatus.OPERATION_ERROR,"当前节点为父节点,不能删除");
+        }
 
+        Example example = new Example(SpuEntity.class);
+        Example.Criteria criteria = example.createCriteria();
+
+        criteria.andEqualTo("cid3",categoryEntity.getId());
+        List<SpuEntity> spuEntityList = spuMapper.selectByExample(example);
+
+        if(spuEntityList.size()>0){
+            return this.setResultError(HTTPStatus.OPERATION_ERROR,"当前分类被商品绑定不能删除");
         }
 
         Integer count = categoryMapper.getByCategoryId(id);
         if(count > 0){
-            return this.setResultError(HTTPStatus.OPERATION_ERROR,"当前分类被品牌绑定,不能删除");
+            return this.setResultError(HTTPStatus.OPERATION_ERROR,"当前分类被品牌绑定不能删除");
+        }
+        Integer count1 = categoryMapper.getSepcGroup(id);
+        if(count1 > 0){
+            return this.setResultError(HTTPStatus.OPERATION_ERROR,"当前分类被规格组绑定不能删除");
         }
 
-        Example example = new Example(CategoryEntity.class);
-
-        example.createCriteria().andEqualTo("parentId",categoryEntity.getParentId());
-
-        List<CategoryEntity> list = categoryMapper.selectByExample(example);
-
-        if(!list.isEmpty() && list.size() == 1){
-
-            CategoryEntity parentCateEntity = new CategoryEntity();
-
-            parentCateEntity.setId(categoryEntity.getParentId());
-
-            parentCateEntity.setIsParent(0);
-
-            categoryMapper.updateByPrimaryKeySelective(parentCateEntity);
-
-        }
+        this.editIsParent(categoryEntity);
 
         categoryMapper.deleteByPrimaryKey(id);
 
         return this.setResultSuccess();
+
     }
 
     @Override
@@ -121,4 +116,19 @@ public class CategoryServiceImpl extends BaseApiService implements CategoryServi
         return this.setResultSuccess(byBrandId);
     }
 
+    public void editIsParent(CategoryEntity categoryEntity) {
+
+        Example example = new Example(CategoryEntity.class);
+        example.createCriteria().andEqualTo("parentId", categoryEntity.getParentId());
+        List<CategoryEntity> list = categoryMapper.selectByExample(example);
+
+        if (list.size() == 1) {
+
+            CategoryEntity parentCategory = new CategoryEntity();
+            parentCategory.setId(categoryEntity.getParentId());
+            parentCategory.setIsParent(0);
+            categoryMapper.updateByPrimaryKeySelective(parentCategory);
+
+        }
+    }
 }

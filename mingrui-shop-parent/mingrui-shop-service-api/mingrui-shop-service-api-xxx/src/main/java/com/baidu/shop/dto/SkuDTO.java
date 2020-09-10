@@ -38,7 +38,6 @@ public class SkuDTO {
     @ApiModelProperty(value = "sku的特有规格参数键值对，json格式，反序列化时请使用linkedHashMap，保证有序")
     private String ownSpec;
 
-    //注意此处使用boolean值来接,在service中处理一下就可以了
     @ApiModelProperty(value = "是否有效，0无效，1有效", example = "1")
     private Boolean enable;
 
