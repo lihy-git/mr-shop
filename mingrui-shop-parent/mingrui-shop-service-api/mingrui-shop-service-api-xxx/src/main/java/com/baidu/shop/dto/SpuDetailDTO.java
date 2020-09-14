@@ -28,7 +28,7 @@ public class SpuDetailDTO {
     private String specialSpec;
 
     @ApiModelProperty(value = "包装清单")
-    private String packageList;
+    private String packingList;
 
     @ApiModelProperty(value = "售后服务")
     private String afterService;

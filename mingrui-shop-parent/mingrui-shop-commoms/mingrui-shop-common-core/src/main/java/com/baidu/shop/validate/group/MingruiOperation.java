@@ -11,6 +11,5 @@ public class MingruiOperation {
 
     public interface Add{}
     public interface Update{}
-    public interface  Search{}
 
 }
