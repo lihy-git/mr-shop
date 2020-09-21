@@ -56,26 +56,28 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
 
 
     @Override
-    public Result<PageInfo<SpuEntity>> getSpuInfo(SpuDTO spuDTO) {
-
+    public Result<List<SpuDTO>> getSpuInfo(SpuDTO spuDTO) {
+        //分页
         if(ObjectUtil.isNotNull(spuDTO.getPage())
                 && ObjectUtil.isNotNull(spuDTO.getRows()))
             PageHelper.startPage(spuDTO.getPage(),spuDTO.getRows());
-
+        //构建条件查询
         Example example = new Example(SpuEntity.class);
-
+        //构建查询条件
         Example.Criteria criteria = example.createCriteria();
         if(StringUtil.isNotEmpty(spuDTO.getTitle()))
             criteria.andLike("title","%" + spuDTO.getTitle() + "%");
         if(ObjectUtil.isNotNull(spuDTO.getSaleable()) && spuDTO.getSaleable() != 2)
             criteria.andEqualTo("saleable",spuDTO.getSaleable());
-
+        //排序
         if(ObjectUtil.isNotNull(spuDTO.getSort()))
             example.setOrderByClause(spuDTO.getOrderByClause());
+        //自定义函数将spu信息和品牌名称一块查询出来
+        //select s.*,b.`name` as brandName from tb_spu s, tb_brand b where s.brand_id = b.id
         List<SpuEntity> list = spuMapper.selectByExample(example);
         List<SpuDTO> spuDtoList = list.stream().map(spuEntity -> {
             SpuDTO spuDTO1 = BaiduBeanUtil.copyProperties(spuEntity, SpuDTO.class);
-
+            //设置品牌名称
             BrandDTO brandDTO = new BrandDTO();
             brandDTO.setId(spuEntity.getBrandId());
             Result<PageInfo<BrandEntity>> brandInfo = brandService.getBrandInfo(brandDTO);
@@ -86,17 +88,16 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
                     spuDTO1.setBrandName(list1.get(0).getName());
                 }
             }
-
+            //分类名称
+            //select group_concat(name separator '/') as cateroryName from tb_category where id in(1,2,3)
             String caterogyName = categoryMapper.selectByIdList(
                     Arrays.asList(spuDTO1.getCid1(), spuDTO1.getCid2(), spuDTO1.getCid3()))
                     .stream().map(category -> category.getName())
                     .collect(Collectors.joining("/"));
             spuDTO1.setCategoryName(caterogyName);
-
             return spuDTO1;
         }).collect(Collectors.toList());
         PageInfo<SpuEntity> info = new PageInfo<>(list);
-
         return this.setResult(HTTPStatus.OK,info.getTotal() + "",spuDtoList);
     }
 

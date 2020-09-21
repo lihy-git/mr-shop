@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>测试thymeleaf</title>
+</head>
+<body>
+<!--    你好，<span th:text="${name}"></span>-->
+
+<!--    你好<span th:text="${stu.code}"></span><br>-->
+<!--    -->
+<!--    密码是：<span data-th-text="${stu.pass}"></span><br>-->
+<!--    -->
+<!--    您的年龄是：<span th:text="${stu['age']}"></span><br>-->
+<!--    -->
+<!--    您喜欢的颜色是<span th:utext="${stu.likeColor}"></span>-->
+<!--    <br>-->
+<!--    <div th:object="${stu}">-->
+<!--        <span th:text="*{code}"></span><br>-->
+<!--        <span th:text="*{pass}"></span><br>-->
+<!--        <span th:text="*{age}"></span><br>-->
+<!--        <span th:text="*{likeColor}"></span><br>-->
+<!--    </div>-->
+
+<!--    -->
+<!--    <span th:text="${stu.code.substring(2)}"></span><br>-->
+<!--    <span th:text="${stu.code.split('')[1]}"></span><br>-->
+<!--&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+<!--    <span th:text="'666'"></span><br>-->
+<!--    数字 :<span th:text="1024*2"></span>-->
+<!--    <span th:if="${stu.age} >=18">-->
+<!--            成年-->
+<!--    </span><br>-->
+<!--    <span th:text="|你好${stu.code}真的6666|"></span><br>-->
+<!--    <br>-->
+<!--    <span th:text="${stu.age} *2"></span>-->
+<!--    <br>-->
+<!--    <br>-->
+<!--    <span th:text="${stu.age} >=19 ? '成年' : '未成年' "></span>-->
+<!--    <br>-->
+<!--    <br>-->
+<!--    <span th:text="${stu.code} ?: ''"></span>-->
+<!--    <ul>-->
+<!--        <li >下标&#45;&#45;编码&#45;&#45;密码&#45;&#45;年龄</li>-->
+<!--        <li th:each="stu ,stat : ${stuList}">-->
+<!--            <span th:text="${stat.index}"></span>&#45;&#45;-->
+<!--            <span th:text="${stu.code}"></span>&#45;&#45;-->
+<!--            <span th:text="${stu.pass}"></span>&#45;&#45;-->
+<!--            <span th:text="${stu.age}"></span>-->
+<!--        </li>-->
+<!--    </ul>-->
+<ul>
+    <li >下标--编码--密码--年龄</li>
+    <li th:each="stu,stat : ${stuList}">
+        <span th:text="${stat.index}"></span>--
+        <span th:text="${stu.code}"></span>--
+        <span th:text="${stu.pass}"></span>--
+        <span th:text="${stu.age}"></span>
+    </li>
+</ul>
+</body>
+</html>
