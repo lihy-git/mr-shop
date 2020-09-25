@@ -97,6 +97,10 @@ public class SpecificationServiceImpl extends BaseApiService implements Specific
             criteria.andEqualTo("cid",specParamDTO.getCid());
         }
 
+        if (ObjectUtil.isNotNull(specParamDTO.getSearching())){
+            criteria.andEqualTo("searching",specParamDTO.getSearching());
+        }
+
         List<SpecParamEntity> list = specParamMapper.selectByExample(example);
 
         return this.setResultSuccess(list);
