@@ -4,6 +4,20 @@ server:
 spring:
   application:
     name: xxx-service
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+    # 是否确认回调
+    publisher-confirm-type: correlated
+    # 是否返回回调
+    publisher-returns: true
+    virtual-host: /
+    # 手动确认
+    listener:
+      simple:
+        acknowledge-mode: manual
   # 配置数据源
   datasource:
     # 数据源名称，任意

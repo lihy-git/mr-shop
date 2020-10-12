@@ -18,18 +18,18 @@ import java.util.Map;
  * @Date 2020/9/23
  * @Version V1.0
  **/
-@Controller
+//@Controller
 //@RestController --> @Controller和@ResponseBody --> 不能返回视图了
-@RequestMapping(value = "item")
+//@RequestMapping(value = "item")
 public class PageController {
 
-    @Autowired
+    //@Autowired
     private HttpServletRequest httpServletRequest;
 
-    @Autowired
+    //@Autowired
     private PageService pageService;
 
-    @GetMapping(value = "/{spuId}.html")
+    //@GetMapping(value = "/{spuId}.html")
     public String test(@PathVariable(value = "spuId") Integer spuId , ModelMap modelMap, HttpServletRequest httpServletRequest){
 
         Map<String,Object> map = pageService.getPageInfoBySpuId(spuId);

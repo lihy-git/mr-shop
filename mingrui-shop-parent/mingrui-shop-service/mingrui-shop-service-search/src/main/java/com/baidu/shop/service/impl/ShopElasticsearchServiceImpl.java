@@ -78,7 +78,7 @@ public class ShopElasticsearchServiceImpl extends BaseApiService implements Shop
         }
 
         //批量新增数据
-        List<GoodsDoc> goodsDocs = this.esGoodsInfo();
+        List<GoodsDoc> goodsDocs = this.esGoodsInfo(new SpuDTO());
         elasticsearchRestTemplate.save(goodsDocs);
 
         return this.setResultSuccess();
@@ -118,6 +118,26 @@ public class ShopElasticsearchServiceImpl extends BaseApiService implements Shop
         List<BrandEntity> brandList = this.getBrandList(aggregations);//获取品牌集合
 
         return new GoodsResponse(total, totalPage, brandList, categoryList, goodsList,specParamValueMap);
+    }
+
+    @Override
+    public Result<JSONObject> saveData(Integer spuId) {
+        SpuDTO spuDTO = new SpuDTO();
+        spuDTO.setId(spuId);
+        List<GoodsDoc> goodsDocs = this.esGoodsInfo(spuDTO);
+        GoodsDoc goodsDoc = goodsDocs.get(0);
+        elasticsearchRestTemplate.save(goodsDoc);
+
+        return this.setResultSuccess();
+    }
+
+    @Override
+    public Result<JSONObject> delData(Integer spuId) {
+        GoodsDoc goodsDoc = new GoodsDoc();
+        goodsDoc.setId(spuId.longValue());
+
+        elasticsearchRestTemplate.delete(goodsDoc);
+        return this.setResultSuccess();
     }
 
     private Map<String,List<String>> getspecParam(Integer hotCid,String search){
@@ -260,11 +280,11 @@ public class ShopElasticsearchServiceImpl extends BaseApiService implements Shop
         return this.setResultSuccess();
     }
 
-    private List<GoodsDoc> esGoodsInfo() {
+    private List<GoodsDoc> esGoodsInfo(SpuDTO spuDTO) {
         //查询出来的数据是多个spu
         List<GoodsDoc> goodsDocs = new ArrayList<>();
         //查询spu信息
-        SpuDTO spuDTO = new SpuDTO();
+//        SpuDTO spuDTO = new SpuDTO();
         Result<List<SpuDTO>> spuInfo = goodsFeign.getSpuInfo(spuDTO);
 
         if(spuInfo.getCode() == HTTPStatus.OK){
