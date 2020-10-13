@@ -18,6 +18,7 @@ public interface TemplateService {
     @GetMapping(value = "template/initStaticHTMLTemplate")
     Result<JSONObject> initStaticHTMLTemplate();
 
+    @ApiOperation(value = "通过spuId删除文件")
     @DeleteMapping(value = "template/delHTMLBySpuId")
     Result<JSONObject> delHTMLBySpuId(Integer spuId);
 

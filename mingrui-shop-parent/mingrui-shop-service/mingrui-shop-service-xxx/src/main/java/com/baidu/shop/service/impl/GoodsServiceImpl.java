@@ -111,8 +111,44 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
     }
 
     @Override
+    // @Transactional  //jvm 虚拟机栈 -->入栈和出栈的问题
     public Result<JSONObject> saveGoods(SpuDTO spuDTO) {
 
+        Integer spuId = addInfoTransaction(spuDTO);
+
+        //@feign search template
+        //发送消息
+        mrRabbitMQ.send(spuId + "", MqMessageConstant.SPU_ROUT_KEY_SAVE);
+
+        return this.setResultSuccess();
+    }
+//        Date date = new Date();
+//
+//        SpuEntity spuEntity = BaiduBeanUtil.copyProperties(spuDTO, SpuEntity.class);
+//        spuEntity.setSaleable(1);
+//        spuEntity.setValid(1);
+//        spuEntity.setCreateTime(date);
+//        spuEntity.setLastUpdateTime(date);
+//        //新增spu
+//        spuMapper.insertSelective(spuEntity);
+//
+//        Integer spuId = spuEntity.getId();
+//        //新增spudetail
+//        SpuDetailEntity spuDetailEntity = BaiduBeanUtil.copyProperties(spuDTO.getSpuDetail(), SpuDetailEntity.class);
+//        spuDetailEntity.setSpuId(spuId);
+//        spuDetailMapper.insertSelective(spuDetailEntity);
+//
+//        this.addSkusAndStocks(spuDTO.getSkus(),spuId,date);
+//
+//        mrRabbitMQ.send(spuEntity.getId() + "", MqMessageConstant.SPU_ROUT_KEY_SAVE);
+//        return this.setResultSuccess();
+//    }
+    @Transactional
+    public Integer addInfoTransaction(SpuDTO spuDTO){
+
+        //JDK的动态代理
+        //cglib动态代理
+        //aspectj动态代理
         Date date = new Date();
 
         SpuEntity spuEntity = BaiduBeanUtil.copyProperties(spuDTO, SpuEntity.class);
@@ -122,7 +158,6 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
         spuEntity.setLastUpdateTime(date);
         //新增spu
         spuMapper.insertSelective(spuEntity);
-
         Integer spuId = spuEntity.getId();
         //新增spudetail
         SpuDetailEntity spuDetailEntity = BaiduBeanUtil.copyProperties(spuDTO.getSpuDetail(), SpuDetailEntity.class);
@@ -130,9 +165,7 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
         spuDetailMapper.insertSelective(spuDetailEntity);
 
         this.addSkusAndStocks(spuDTO.getSkus(),spuId,date);
-
-        mrRabbitMQ.send(spuEntity.getId() + "", MqMessageConstant.SPU_ROUT_KEY_SAVE);
-        return this.setResultSuccess();
+        return spuEntity.getId();
     }
 
     @Override
@@ -151,18 +184,38 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
 
     @Override
     public Result<JSONObject> editGoods(SpuDTO spuDTO) {
-        Date date = new Date();
+        this.editInfoTransaction(spuDTO);
 
-        SpuEntity spuEntity = BaiduBeanUtil.copyProperties(spuDTO, SpuEntity.class);
-        spuEntity.setLastUpdateTime(date);
-
-        spuMapper.updateByPrimaryKeySelective(spuEntity);
-        spuDetailMapper.updateByPrimaryKeySelective(BaiduBeanUtil.copyProperties(spuDTO.getSpuDetail(),SpuDetailEntity.class));
-
-        this.delSkusAndStocks(spuDTO.getId());
-        this.addSkusAndStocks(spuDTO.getSkus(),spuDTO.getId(),date);
+        mrRabbitMQ.send(spuDTO.getId() + "", MqMessageConstant.SPU_ROUT_KEY_UPDATE);
 
         return this.setResultSuccess();
+    }
+//        Date date = new Date();
+//
+//        SpuEntity spuEntity = BaiduBeanUtil.copyProperties(spuDTO, SpuEntity.class);
+//        spuEntity.setLastUpdateTime(date);
+//
+//        spuMapper.updateByPrimaryKeySelective(spuEntity);
+//        spuDetailMapper.updateByPrimaryKeySelective(BaiduBeanUtil.copyProperties(spuDTO.getSpuDetail(),SpuDetailEntity.class));
+//
+//        this.delSkusAndStocks(spuDTO.getId());
+//        this.addSkusAndStocks(spuDTO.getSkus(),spuDTO.getId(),date);
+//
+//        return this.setResultSuccess();
+    //}
+    @Transactional
+    public void editInfoTransaction(SpuDTO spuDTO){
+        Date date = new Date();
+        //修改spu信息
+        SpuEntity spuEntity = BaiduBeanUtil.copyProperties(spuDTO, SpuEntity.class);
+        spuEntity.setLastUpdateTime(date);//!!!!!!!!!设置最后更新时间
+        spuMapper.updateByPrimaryKeySelective(spuEntity);
+        //修改spudetail
+        spuDetailMapper.updateByPrimaryKeySelective(BaiduBeanUtil.copyProperties(spuDTO.getSpuDetail(),SpuDetailEntity.class));
+        this.delSkusAndStocks(spuDTO.getId());
+
+        //新增 sku和stock数据
+        this.addSkusAndStocks(spuDTO.getSkus(),spuDTO.getId(),date);
     }
 
     private void addSkusAndStocks(List<SkuDTO> skus, Integer spuId, Date date){
@@ -184,11 +237,24 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
     @Override
     public Result<JSONObject> delGoods(Integer spuId) {
 
+        this.delInfoTransaction(spuId);
+
+        mrRabbitMQ.send(spuId + "", MqMessageConstant.SPU_ROUT_KEY_DELETE);
+        return this.setResultSuccess();
+//        spuMapper.deleteByPrimaryKey(spuId);
+//        spuDetailMapper.deleteByPrimaryKey(spuId);
+//
+//        this.delSkusAndStocks(spuId);
+//        return this.setResultSuccess();
+    }
+    @Transactional
+    public void delInfoTransaction(Integer spuId){
+        //删除spu
         spuMapper.deleteByPrimaryKey(spuId);
+        //删除detail
         spuDetailMapper.deleteByPrimaryKey(spuId);
 
         this.delSkusAndStocks(spuId);
-        return this.setResultSuccess();
     }
 
     @Transactional

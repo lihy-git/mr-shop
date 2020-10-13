@@ -105,12 +105,13 @@ public class TemplateServiceImpl extends BaseApiService implements TemplateServi
     @Override
     public Result<JSONObject> delHTMLBySpuId(Integer spuId) {
 
+        //param: 文件的路径
         File file = new File(staticHTMLPath + File.separator + spuId + ".html");
 
+        //file.delete() 删除文件-->boolean(true:删除成功false:删除失败)
         if(!file.delete()){
             return this.setResultError("文件删除失败");
         }
-
         return this.setResultSuccess();
     }
 

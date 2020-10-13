@@ -124,9 +124,9 @@ public class ShopElasticsearchServiceImpl extends BaseApiService implements Shop
     public Result<JSONObject> saveData(Integer spuId) {
         SpuDTO spuDTO = new SpuDTO();
         spuDTO.setId(spuId);
-        List<GoodsDoc> goodsDocs = this.esGoodsInfo(spuDTO);
-        GoodsDoc goodsDoc = goodsDocs.get(0);
-        elasticsearchRestTemplate.save(goodsDoc);
+
+        List<GoodsDoc> goodsDocs = this.esGoodsInfo(spuDTO);//在这行代码有可能是查询不到数据的
+        elasticsearchRestTemplate.save(goodsDocs.get(0));
 
         return this.setResultSuccess();
     }
