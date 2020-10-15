@@ -31,4 +31,8 @@ public interface UserService {
     @PostMapping(value = "user/sendValidCode")
     Result<JSONObject> sendValidCode(@RequestBody UserDTO userDTO);
 
+    @ApiOperation(value = "校验用户输入的手机验证码")
+    @GetMapping(value = "/user/checkCode")
+    Result<JSONObject> checkCode(String phone,String validcode);
+
 }
